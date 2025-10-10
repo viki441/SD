@@ -1,3 +1,4 @@
+//zadacha da napravim fq za deserializaciq i serealizaciq na fstream s edin array (bonus napravi go da e kato template)
 #include <iostream>
 template<typename T>
 class A 
