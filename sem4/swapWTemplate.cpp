@@ -13,6 +13,7 @@ public:
 	void swap()
 	{
 		T temp = this->val1;
+		//*(this).val1;
 		this->val1 = this->val2;
 		this->val2 = temp;
 	}
