@@ -1,0 +1,114 @@
+#include <stdexcept>
+#include <iostream>
+
+using namespace std;
+
+template<typename T>
+struct Node 
+{
+	T data;
+	Node* next;
+
+	Node(const T& value)
+		:data(value), next(nullptr)
+	{}
+};
+
+template <typename T>
+struct Queue
+{
+	Node<T>* front;
+	Node<T>* rear;
+	
+	Queue()//empty
+		:front(nullptr), rear(nullptr)
+	{}
+
+	/////////////////////////////////ENQUEUE///////////////////////////////////////////
+	void enqueue(const T& value)
+	{
+		Node<T>* newNode = new Node<T>(value);
+
+		if (rear == nullptr) front = rear = newNode;
+		else
+		{
+			rear->next = newNode;
+			rear = newNode;
+		}
+	}
+
+	//////////////////////////////////DEQUEUE//////////////////////////////////////////
+	T dequeue()
+	{
+		if (front == nullptr) throw underflow_error("Queue is empty\n");
+		
+		Node<T>* temporary = front;
+		front = front->next;
+
+		if (front == nullptr) rear = nullptr;
+
+		T oldData = temporary->data;
+		delete temporary;
+		return oldData;
+
+	}
+
+
+	////////////////////////////FRONT///////REAR///////////////////////////////////////
+	T& getFront()
+	{
+		return front->data;
+	}
+	T& getRear()
+	{
+		return rear->data;
+	}
+
+	bool isEmpty() const
+	{
+		return front == nullptr;
+	}
+
+	size_t getSize() const
+	{
+		size_t count = 0;
+		Node<T>* current = front;
+		while (current != nullptr)
+		{
+			count++;
+			current = current->next;
+		}
+		return count;
+	}
+
+	void clearQueue()
+	{
+		while (!isEmpty())
+		{
+			dequeue();
+		}
+	}
+};
+
+int main()
+{
+	Queue<int> q1;
+
+	q1.enqueue(10);
+	q1.enqueue(20);
+	q1.enqueue(30);
+
+	cout << "Front: " << q1.getFront() << "\n";
+	cout << "Rear: " << q1.getRear() << "\n";
+	cout << "Size: " << q1.getSize() << "\n";
+
+	cout << "Dequeuing one element...\n";
+	q1.dequeue();
+	cout << "Front: " << q1.getFront() << "\n";
+	cout << "Size: " << q1.getSize() << "\n";
+
+	cout << "Clearing queue...\n";
+	q1.clearQueue();
+	cout << "Is empty? " << (q1.isEmpty() ? "yes" : "no") << "\n";
+	
+}
