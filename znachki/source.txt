@@ -2,4 +2,5 @@ https://github.com/Teodor1379/Data-Structures-and-Programming/blob/main/Informat
 (zadachi s nomera)
 
 leetcode:
-https://leetcode.com/problems/subsets-ii?envType=problem-list-v2&envId=backtracking - subset2 in recursion
+https://leetcode.com/problems/subsets-ii?envType=problem-list-v2&envId=backtracking - subset2 in dynArr
+
