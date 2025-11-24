@@ -1,1 +1,5 @@
 https://github.com/Teodor1379/Data-Structures-and-Programming/blob/main/Informatics/2025-2026/Seminars/Group%203/
+(zadachi s nomera)
+
+leetcode:
+https://leetcode.com/problems/subsets-ii?envType=problem-list-v2&envId=backtracking - subset2 in recursion
