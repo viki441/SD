@@ -3,7 +3,6 @@
 Аритметичният израз съдържа цели числа и бинарните операции +, -, *, / със стандартната им семантика. На стандартния изход 
 изведете резултата от изчислението на аритметичния израз, запазвайки приоритета на операциите.
 */
-
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -17,38 +16,50 @@ class linkedStack
 {
 
 public:
+	//-------------------------------------BIG 3-----------------------------------------------
+	linkedStack() = default;
+	linkedStack(const linkedStack&) = delete;
+	linkedStack& operator=(const linkedStack&) = delete;
+	~linkedStack()
+	{
+		clearStack();
+	}
+
+	
 	//--------------------------------------PUSH------------------------------------------------
-	void push(const T& value) // dobavqne na element PREDI segashniq tos
+	void push(const T& value)
 	{
 		tos = new node(value, tos);
 	}
 	//---------------------------------------POP----------------------------------------------
 	T pop()
 	{
-		if (tos != nullptr)
-		{
-			node* temporary = tos; 
-			tos = temporary->next; 
+		if (isEmpty())
+			throw out_of_range("Stack is empty\n");
 
-			T data = temporary->data;
-			delete temporary;
-			return data;
+		node* temporary = tos;
+		tos = temporary->next;
 
-		}
-		throw std::out_of_range("error");
+		T data = temporary->data;
+		delete temporary;
+		return data;
 	}
 	//-------------------------------TOP------EMPTY-----------------------------------------
-	bool isEmpty()
+	bool isEmpty() const
 	{
 		return tos == nullptr;
 	}
-	T top() // tuk se vzima ne addresa za tos, a koq stoinost (data) e pri kutiikata kum koqto sochi lista
+
+	T top() const
 	{
-		if (tos != nullptr) return tos->data;
-		throw std::out_of_range("Error");
+		if (isEmpty()) 
+			throw out_of_range("Stack  is empty\n");
+		return tos->data;
+		
 	}
+	
 	//-------------------------------SIZE-----------------------------------------------------
-	int getSize()
+	int getSize() const
 	{
 		int counter = 0;
 		node* runner = tos;
@@ -59,6 +70,7 @@ public:
 		}
 		return counter;
 	}
+
 	//-------------------------------CLEAR---------------------------------------------------
 	bool clearStack()
 	{
@@ -81,34 +93,30 @@ private:
 			:data(d), next(n)
 		{}
 	};
+
 	node* tos = nullptr;
-
-	
 };
 
-template <typename T>
-struct queueNode
-{
-	T data;
-	queueNode* next;
-
-	queueNode(const T& d, queueNode* n = nullptr )
-		: data(d), next(n)
-	{};
-};
 
 template <typename T>
-struct queue
+class queue
 {
-	queueNode<T>* front = nullptr; // to be poped
-	queueNode<T>* end = nullptr; // just added
+public:
+	queue() = default;
+	queue(const queue&) = delete;
+	queue& operator=(const queue&) = delete;
+	~queue()
+	{
+		while (!isEmpty())
+			pop();
+	}
 
 	T pop()
 	{
 		if (front == nullptr)
 			throw std::underflow_error("Cannot pop from empty queue");
 
-		queueNode<T>* temp = front;
+		queueNode* temp = front;
 		
 		T value = temp->data;
 
@@ -122,7 +130,7 @@ struct queue
 
 	void push(const T& d)
 	{
-		queueNode<T>* newNode = new queueNode<T>(d);
+		queueNode* newNode = new queueNode(d);
 
 		if (end == nullptr) {
 			front = end = newNode;
@@ -140,7 +148,7 @@ struct queue
 
 	int getSize()
 	{
-		queueNode<T>* looper = front;
+		queueNode* looper = front;
 		int counter = 0;
 		while (looper != nullptr)
 		{
@@ -157,6 +165,20 @@ struct queue
 
 		return front->data;
 	}
+
+
+private:
+	struct queueNode
+	{
+		T data;
+		queueNode* next;
+		queueNode(const T& d, queueNode* n = nullptr)
+			: data(d), next(n)
+		{}
+	};
+
+	queueNode* front = nullptr; // to be poped
+	queueNode* end = nullptr; // just added
 };
 
 int precedence(char op)
@@ -167,25 +189,23 @@ int precedence(char op)
 		return 2;
 	return 0;
 }
-
 int applyOp(int a, int b, char op) 
 {
-	switch (op) {
+	switch (op)
+	{
 	case '+': return a + b;
 	case '-': return a - b;
 	case '*': return a * b;
 	case '/':
 		if (b == 0)
-			throw std::logic_error("Division by zero");
+			throw logic_error("Division by zero");
 		return a / b;
 	}
-	throw std::logic_error("Unknown operator");
+	throw logic_error("Unknown operator");
 }
-
-
-queue<string> infixToPRN(const string& text)
+void infixToPRN(const string& text, queue<string>& output)
 {
-	queue<string> output;
+	
 	linkedStack<char> ops;
 
 	for (size_t i = 0; i < text.size(); )
@@ -258,11 +278,7 @@ queue<string> infixToPRN(const string& text)
 	while (!ops.isEmpty())
 		output.push(string(1, ops.pop()));
 
-	return output;
-
 }
-
-
 int evalRPN(queue<string>& rpn)
 {
 	linkedStack<int> st;
@@ -290,13 +306,15 @@ int evalRPN(queue<string>& rpn)
 
 int calculate(const string& text)
 {
-	queue<string> rpn = infixToPRN(text);
-	return evalRPN(rpn);
+	queue<string> output;
+	infixToPRN(text, output);
+	return evalRPN(output);
 }
 
 int main()
 {
 	string text = "2+3-0*4/2";
+	
 	cout << calculate(text);
 }
 
