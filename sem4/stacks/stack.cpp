@@ -1,81 +1,61 @@
-//zadacha za linked stack
-
-/*
-tova e stack
-
-* xx *
-* 10 *
-* 11 *
-* 12 *
-* __ *
-
-tova e linked stack:
-		*********     *********      *********
-list--->* 10 |------->* 11 |-------->* 12 | -----> nullptr
-		********      ********       *********
-
-kudeto kutiikata s 10 e tos
-ottam se vadi i dobavq elemeti
-
-*/
-
 #include <stdexcept>
-#include <iostream>
-using namespace std;
 #include <string>
+#include <iostream>
+#include <cctype>
+using namespace std;
 
-template<typename T> // hubavo e da e template za da raboti za vsichko
+template<typename T>
 class linkedStack
 {
+
 public:
-	//--------------------------------------PUSH------------------------------------------------
-	void push(T& value) // dobavqne na element PREDI segashniq tos
+	//-------------------------------------BIG 3-----------------------------------------------
+	linkedStack() = default;
+	linkedStack(const linkedStack&) = delete;
+	linkedStack& operator=(const linkedStack&) = delete;
+	~linkedStack()
 	{
-		//primerno {       46, [10 | pointer kum 11]       } cqloto e pointer A
-		//
-		node* data = new node{ value, tos }; //tuk redirektvame nai-noviq node (46) da sochi kum segashniq tos koeto e node(10)
-		tos = data; // Veche lista zapocha ot pointer A koeto znachi che tos sochi kum node (46)
+		clearStack();
 	}
 
-
+	
+	//--------------------------------------PUSH------------------------------------------------
+	void push(const T& value)
+	{
+		tos = new node(value, tos);
+	}
 	//---------------------------------------POP----------------------------------------------
 	T pop()
 	{
-		if (tos != nullptr)
-		{
-			node* temporary = tos; //vzimame elementa kum kojto sochi list
-			tos = temporary->next; /*tuk veche sme vzeli elementa kum koito sochi list
-			i mu vzimame puk negovata kutiika na kude sochi, i kazvame na
-			list da sochi napravo natam*/
+		if (isEmpty())
+			throw out_of_range("Stack is empty\n");
 
-			T data = temporary->data; //poneje sa kazali pop da ne e void shte polzvame tova, za da vurnem samo stojnostta na kuttikata kum koqto sochi list
-			delete temporary;//triem
-			/*poluchava se da se iztrie zashtoto veche sme redirectnali tos, i sme napravili temporary, koito e edinstvenoto pointerche, koeto sochi kum stariq tos*/
-			return data;
+		node* temporary = tos;
+		tos = temporary->next;
 
-		}
-		throw std::out_of_range("error");
+		T data = temporary->data;
+		delete temporary;
+		return data;
 	}
-
-
 	//-------------------------------TOP------EMPTY-----------------------------------------
-	bool isEmpty()
+	bool isEmpty() const
 	{
 		return tos == nullptr;
 	}
 
-	T top() // tuk se vzima ne addresa za tos, a koq stoinost (data) e pri kutiikata kum koqto sochi lista
+	T top() const
 	{
-		if (tos != nullptr) return tos->data;
-		throw std::out_of_range("Error");
+		if (isEmpty()) 
+			throw out_of_range("Stack  is empty\n");
+		return tos->data;
+		
 	}
-
+	
 	//-------------------------------SIZE-----------------------------------------------------
-
-	int getSize()
+	int getSize() const
 	{
 		int counter = 0;
-		node* runner = tos; // runner will 'run' through the list until end
+		node* runner = tos;
 		while (runner != nullptr)
 		{
 			counter++;
@@ -87,27 +67,30 @@ public:
 	//-------------------------------CLEAR---------------------------------------------------
 	bool clearStack()
 	{
-		if (isEmpty()) 
+		if (isEmpty())
 			return false;
 
 		while (!isEmpty())
 			pop();
-		
+
 		return true;
 	}
+
 private:
-	//tuk imame edin elemet koito e pointer kum tip struct node 
-	// toi e top of stack
-	// node* tos;
 	struct node
 	{
-		T data; //vmesto onova int data
+		T data;
 		node* next;
-	} *tos; // toest pravim neshto kato vlojeno konteinerche
-	//to go vzimame cqloto kato pointer
+
+		node(const T& d, node* n = nullptr)
+			:data(d), next(n)
+		{}
+	};
+
+	node* tos = nullptr;
 };
 
-
+//-------------------------------------------------------------------------------------------------------------------------//
 template<typename T>
 class CompositeStack
 {
