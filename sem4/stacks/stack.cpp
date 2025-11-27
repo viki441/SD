@@ -67,15 +67,10 @@ public:
 	}
 
 	//-------------------------------CLEAR---------------------------------------------------
-	bool clearStack()
+	void clearStack()
 	{
-		if (isEmpty())
-			return false;
-
 		while (!isEmpty())
 			pop();
-
-		return true;
 	}
 
 private:
