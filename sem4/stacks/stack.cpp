@@ -10,17 +10,47 @@ class linkedStack
 
 public:
 	//-------------------------------------BIG 6-----------------------------------------------
-	linkedStack() = default;
-	linkedStack(const linkedStack&) = delete;
-	linkedStack& operator=(const linkedStack&) = delete;
-	linkedStack(linkedStack&& other) noexcept;
-	linkedStack& operator=(linkedStack&& other) noexcept;
+	linkedStack()
+		:tos(nullptr)
+	{
+	}
+
+	linkedStack(const linkedStack& other)
+		:tos(nullptr)
+	{
+		copyFrom(other.tos);
+	}
+	linkedStack& operator=(const linkedStack& other)
+	{
+		if (this != &other)
+		{
+			clearStack();
+			copyFrom(other.tos);
+		}
+		return *this;
+	}
+
+	linkedStack(linkedStack&& other) noexcept
+		:tos(other.tos)
+	{
+		other.tos = nullptr;
+	}
+	linkedStack& operator=(linkedStack&& other) noexcept
+	{
+		if (this != &other)
+		{
+			clearStack();
+			tos = other.tos;
+			other.tos = nullptr;
+		}
+		return *this;
+	}
+
 	~linkedStack()
 	{
 		clearStack();
 	}
 
-	
 	//--------------------------------------PUSH------------------------------------------------
 	void push(const T& value)
 	{
@@ -30,7 +60,7 @@ public:
 	T pop()
 	{
 		if (isEmpty())
-			throw out_of_range("Stack is empty\n");
+			throw underflow_error("Stack is empty\n");
 
 		node* temporary = tos;
 		tos = temporary->next;
@@ -47,12 +77,12 @@ public:
 
 	T top() const
 	{
-		if (isEmpty()) 
-			throw out_of_range("Stack  is empty\n");
+		if (isEmpty())
+			throw underflow_error("Stack  is empty\n");
 		return tos->data;
-		
+
 	}
-	
+
 	//-------------------------------SIZE-----------------------------------------------------
 	int getSize() const
 	{
@@ -66,12 +96,6 @@ public:
 		return counter;
 	}
 
-	//-------------------------------CLEAR---------------------------------------------------
-	void clearStack()
-	{
-		while (!isEmpty())
-			pop();
-	}
 
 private:
 	struct node
@@ -81,10 +105,42 @@ private:
 
 		node(const T& d, node* n = nullptr)
 			:data(d), next(n)
-		{}
+		{
+		}
 	};
-
 	node* tos = nullptr;
+
+private:
+	//--------------------------------------DYNAMIC---------------------------------------------
+	void copyFrom(const node* other)
+	{
+		if (!isEmpty())
+			throw logic_error("Copy is called on non-empty stack\n");
+
+		if (!other)
+			return;
+
+		//copy tos
+		tos = new node(other->data);
+		other = other->next;
+
+		//copy the rest
+		node* prev = tos;
+		while (other)
+		{
+			prev->next = new node(other->data);
+			prev = prev->next;
+			other = other->next;
+		}
+
+	}
+	//-------------------------------CLEAR---------------------------------------------------
+	void clearStack()
+	{
+		while (!isEmpty())
+			pop();
+	}
+
 };
 
 //-------------------------------------------------------------------------------------------------------------------------//
@@ -132,7 +188,6 @@ public:
 	}
 };
 
-
 class UndoRedoStringBuilder
 {
 private:
@@ -173,7 +228,6 @@ public:
 		throw std::out_of_range("cant redo\n");
 	}
 };
-
 
 int main()
 {
