@@ -9,10 +9,12 @@ class linkedStack
 {
 
 public:
-	//-------------------------------------BIG 3-----------------------------------------------
+	//-------------------------------------BIG 6-----------------------------------------------
 	linkedStack() = default;
 	linkedStack(const linkedStack&) = delete;
 	linkedStack& operator=(const linkedStack&) = delete;
+	linkedStack(linkedStack&& other) noexcept;
+	linkedStack& operator=(linkedStack&& other) noexcept;
 	~linkedStack()
 	{
 		clearStack();
