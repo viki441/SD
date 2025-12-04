@@ -239,6 +239,69 @@ public:
 		return true;
 	}
 
+	//-------------------------------------CONCAT-------------------------------------------------
+	void concatLists(LinkedList& other)
+	{
+		if (!other.head)
+			return;
+
+		if (!this->head)
+		{
+			this->head = other.head;
+			this->tail = other.tail;
+		}
+		else
+		{
+			this->tail->next = other.head;
+			this->tail = other.tail;
+		}
+		
+		other.head = other.tail = nullptr;
+			
+	}
+
+	//-------------------------------------FILTER-------------------------------------------------
+	template <typename Func>
+	void filter(Func func)
+	{
+		Node* curr = head;
+		Node* prev = nullptr;
+			
+		while (curr)
+		{
+			if (!func(curr->data))
+			{
+				Node* temp = curr;
+				if (prev)
+					prev->next = curr->next;
+				else
+					head = curr->next;
+
+				if (curr == tail)
+					tail = prev;
+
+				curr = curr->next;
+				delete temp;
+			}
+			else
+			{
+				prev = curr;
+				curr = curr->next;
+
+			}
+		}
+	}
+
+
+	//------------------------------------COMBINE-------------------------------------------------
+	void combine(LinkedList& other)
+	{
+		//concat and filter
+		concatLists(other);
+		sort();
+	}
+
+
 	//-------------------------------------PRINT--------------------------------------------------
 	void printList() const
 	{
@@ -254,7 +317,24 @@ public:
 			cout << curr->data << " ";
 			curr = curr->next;
 		}
+		cout << endl;
 	}
+
+	//--------------------------------------SORT---------------------------------------------------
+	void sort()
+	{
+		head = mergeSort(head);
+
+		//fix tail
+		tail = head;
+		if (tail)
+		{
+			while (tail->next)
+				tail = tail->next;
+		}
+	}
+
+
 
 private:
 	//------------------------------------DYNAMIC-------------------------------------------------
@@ -285,6 +365,50 @@ private:
 		tail = currNew;
 	}
 
+
+	//-------------------------------------MERGE------------------------------------------------------
+	Node* merge(Node* a, Node* b)
+	{
+		if (!a) return b;
+		if (!b) return a;
+
+		Node* result = nullptr;
+		if (a->data <= b->data)
+		{
+			result = a;
+			result->next = merge(a->next, b);
+		}
+
+		else
+		{
+			result = b;
+			result->next = merge(a, b->next);
+		}
+		return result;
+	}	
+	Node* mergeSort(Node* node)
+	{
+		if (!node || !node->next)
+			return node;
+
+		Node* slow = node;
+		Node* fast = node->next;
+
+		while (fast && fast->next)
+		{
+			slow = slow->next;
+			fast = fast->next->next;
+		}
+
+		Node* mid = slow->next;
+		slow->next = nullptr;
+
+		Node* left = mergeSort(node);
+		Node* right = mergeSort(mid);
+
+		return merge(left, right);
+	}
+
 };
 
 int main()
@@ -293,9 +417,16 @@ int main()
 	list.pushFront(3);
 	list.pushBack(4);
 	list.pushFront(1);
-	list.printList();
-	cout << list.getFront() << endl << list.getBack() << endl;
-	list.popFront();
+	list.pushBack(0);
+	//list.printList();
+	//cout << list.getFront() << endl << list.getBack() << endl;
+	//list.popFront();
+	//list.printList();
+
+	//list.filter([](int x) {return x % 2 == 0; });
+	
+	
+	list.sort();
 	list.printList();
 
 
