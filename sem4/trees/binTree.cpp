@@ -142,7 +142,7 @@ public:
 	//4
 	int getDiameter()
 	{
-		return findDiameter(root);
+		return findDiameter(root, 0);
 	}
 
 
@@ -337,7 +337,7 @@ private:
 
 		if (!node)
 			return false;
-		
+
 		std::cout << "Visiting node " << node->data
 			<< " (current sum=" << sum << ")\n";
 
@@ -348,9 +348,9 @@ private:
 			std::cout << "Leaf reached. Final sum=" << sum << "\n";
 			return (sum == number);
 		}
-			
 
-		return findPath(number, sum , node->left) || findPath(number, sum, node->right);
+
+		return findPath(number, sum, node->left) || findPath(number, sum, node->right);
 
 	}
 	//2
@@ -363,7 +363,7 @@ private:
 			return node->data;
 
 		return findLeafCount(node->left) + findLeafCount(node->right);
-		
+
 
 	}
 	//3
@@ -381,15 +381,22 @@ private:
 		//if n1 is on one side and n2 is on the other side
 		if (left && right)
 			return node;
-			
+
 		return left ? left : right;
-		
+
 	}
 	//4
-	int findDiameter(Node* node)
+	
+	int findDiameter(Node* node, int& diameter)
 	{
 		if (!node)
 			return 0;
+		int leftHeight = findDiameter(node->left, diameter);
+		int rightHeight = findDiameter(node->right, diameter);
+
+		diameter = max(diameter, leftHeight + rightHeight);
+		return 1 + max(leftHeight, rightHeight);
+
 
 	}
 };
@@ -408,15 +415,17 @@ int main()
 	BinTree<int> t;
 	t.insert(10);
 	t.insert(5);
-	
+
 	t.insert(2);
 	t.insert(3);
 	t.insert(20);
 	t.insert(25);
 	t.insert(21);
-	
-	
+
+
 	cout << t.getPathToNumber(4) << endl;
-	cout << t.getCommonRoot(2,3);
+	cout << t.getCommonRoot(2, 3) << endl;
+
+	cout << t.getDepth() << endl;
 
 }
