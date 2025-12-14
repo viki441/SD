@@ -1,0 +1,21 @@
+{
+  "name": "todo-list-2025",
+  "version": "1.0.0",
+  "description": "A simple TODO list application for students.",
+  "main": "script.js",
+  "scripts": {
+    "start": "http-server -c-1",
+    "test": "cypress open"
+  },
+  "keywords": [
+    "todo",
+    "javascript",
+    "cypress"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^13.0.0",
+    "http-server": "^14.1.1"
+  }
+}
