@@ -98,12 +98,12 @@ const char* MyString::getString() const
 //PREDEFINED-----------------------------------------------------------
 char& MyString::operator[](size_t index)
 {
-	if (index > size) throw out_of_range("No such index\n");
+	if (index >= size) throw out_of_range("No such index\n");
 	return string[index];
 }
 const char& MyString::operator[](size_t index) const
 {
-	if (index > size) throw out_of_range("No such index\n");
+	if (index >= size) throw out_of_range("No such index\n");
 	return string[index];
 }
 bool MyString::operator==(const MyString& other) const
@@ -127,7 +127,7 @@ void MyString::push_back(const char c)
 {
 	if (size + 1 >= capacity)
 	{
-		size_t newCap = (capacity == 0) ? 8 : capacity * gowthFactor;
+		size_t newCap = (capacity == 0) ? 8 : capacity * growthFactor;
 		reserve(newCap);
 	}
 
@@ -213,4 +213,5 @@ bool MyString::isOperator(const char ch)
 	return ch == '+' ||
 		ch == '-' || ch == '*' || ch == '/' ||
 		ch == '^';
+
 }
