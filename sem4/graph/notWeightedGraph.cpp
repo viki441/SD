@@ -128,6 +128,7 @@ private:
 				if (!visited[neighbour])
 				{
 					visited[neighbour] = true;
+					q.push(neighbour);
 					cout << neighbour << endl;
 				}
 			}
