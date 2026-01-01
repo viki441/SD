@@ -56,7 +56,7 @@ private:
 	char* string;
 	size_t size;
 	size_t capacity;
-	int gowthFactor = 2;
+	int growthFactor = 2;
 
 	void freeDynamic();
 	void copyDynamic(const MyString& other);
@@ -64,5 +64,6 @@ private:
 	void resize(const int growthFactor);
 	//void shrinkToSize();
 };
+
 
 
