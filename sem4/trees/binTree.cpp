@@ -29,12 +29,10 @@ public:
 	{
 	}
 
-	BinTree(const BinTree* other)
-		:root(nullptr), treeSize(0)
-	{
-		root = clone(other.root);
-		treeSize = other.treeSize;
-	}
+	BinTree(const BinTree& other)
+		:root(clone(other.root)), treeSize(other.size)
+	{}
+
 	BinTree& operator=(const BinTree& other)
 	{
 		if (this == &other) //protection against self assignment
