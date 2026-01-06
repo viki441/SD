@@ -224,9 +224,9 @@ private:
 			return true;
 
 		else if (root->data > value)
-			containsRec(root->left, value);
+			return containsRec(root->left, value);
 		else
-			containsRec(root->right, value);
+			return containsRec(root->right, value);
 
 	}
 	bool containsIterative(const T& value)
@@ -250,10 +250,10 @@ private:
 			return false;
 
 		if (root->data > value)
-			removeRec(root->left, value);
+			return removeRec(root->left, value);
 
 		else if (root->data < value)
-			removeRec(root->right, value);
+			return removeRec(root->right, value);
 
 		//leaf, klon ili root
 		else
@@ -298,9 +298,6 @@ private:
 
 	Node* extractMin(Node*& root)
 	{
-		if (!root)
-			return nullptr;
-
 		if (!root->left) // we find the minimum
 		{
 			Node* minNode = root;
