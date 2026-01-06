@@ -1,217 +1,146 @@
 #include "MyString.h"
-#include <cstring>
-#include <iostream>
+#include <cctype>
 
-using namespace std;
+MyString::MyString() 
+{
+    data.push_back('\0');
+}
 
-//CTORS-----------------------------------------------------------
-MyString::MyString()
-	:size(0), capacity(0), string(nullptr)
+MyString::MyString(const char* s) 
+{
+    if (!s) 
+    {
+        data.push_back('\0');
+        return;
+    }
+    size_t i = 0;
+    while (s[i]) 
+    {
+        data.push_back(s[i]);
+        i++;
+    }
+    data.push_back('\0');
+}
+
+MyString::MyString(const MyString& other) 
+    : data(other.data) 
 {}
-MyString::MyString(const char* s)
+
+MyString& MyString::operator=(const MyString& other) 
 {
-	size_t n = 0;
-	while (s[n]) n++;
-
-	size = n;
-	capacity = n + 1;
-	string = new char[capacity];
-
-	for (size_t i = 0; i < size; i++) string[i] = s[i];
-
-	string[size] = '\0';
-
+    if (this != &other) 
+    {
+        data = other.data;
+    }
+    return *this;
 }
 
-//DYNAMIC---------------------------------------------------------
-void MyString::freeDynamic()
-{
-	delete[] string;
-	string = nullptr;
-}
-void MyString::copyDynamic(const MyString& other)
-{
-	capacity = other.capacity;
-	size = other.size;
+MyString::MyString(MyString&& other) noexcept 
+    : data(std::move(other.data)) 
+{} 
 
-	string = new char[capacity];
-	for (size_t i = 0; i < size; i++) string[i] = other.string[i];
-}
 
-//COPY-------------------------------------------------------------
-MyString::MyString(const MyString& other)
+MyString& MyString::operator=(MyString&& other) noexcept 
 {
-	copyDynamic(other);
-}
-MyString& MyString::operator=(const MyString& other)
-{
-	if (this != &other)
-	{
-		freeDynamic();
-		copyDynamic(other);
-	}
-	return *this;
-}
-
-//MOVE--------------------------------------------------------------
-MyString::MyString(MyString&& other) noexcept
-	:capacity(other.capacity), size(other.size), string(other.string)
-{
-	other.capacity = 0;
-	other.size = 0;
-	other.string = nullptr;
-}
-MyString& MyString::operator=(MyString&& other) noexcept
-{
-	if (this != &other)
-	{
-		freeDynamic();
-		delete[] string;
-
-		capacity = other.capacity;
-		size = other.size;
-		string = other.string;
-
-		other.capacity = 0;
-		other.size = 0;
-		other.string = nullptr;
-	}
-	return *this;
-}
-
-//DTOR----------------------------------------------------------------
-MyString::~MyString()
-{
-	freeDynamic();
-}
-
-//GETTERS--------------------------------------------------------------
-const size_t MyString::getSize() const
-{
-	return size;
-}
-const char* MyString::getString() const
-{
-	return string;
-}
-
-//PREDEFINED-----------------------------------------------------------
-char& MyString::operator[](size_t index)
-{
-	if (index >= size) throw out_of_range("No such index\n");
-	return string[index];
-}
-const char& MyString::operator[](size_t index) const
-{
-	if (index >= size) throw out_of_range("No such index\n");
-	return string[index];
-}
-bool MyString::operator==(const MyString& other) const
-{
-	if (size != other.size) return false;
-
-	for (size_t i = 0; i < size; i++)
-		if (string[i] != other.string[i]) return false;
-
-	return true;
-
-}
-bool MyString::operator!=(const MyString& other) const
-{
-	return !(*this == other);
+    if (this != &other)   
+        data = std::move(other.data);
+    return *this;
 }
 
 
-//ADDITIONAL------------------------------------------------------------
-void MyString::push_back(const char c)
-{
-	if (size + 1 >= capacity)
-	{
-		size_t newCap = (capacity == 0) ? 8 : capacity * growthFactor;
-		reserve(newCap);
-	}
-
-	string[size] = c;
-	size++;
-	string[size] = '\0';
-}
-void MyString::reserve(size_t newCapacity)
-{
-	if (newCapacity <= capacity) return;
-	char* newString = new char[newCapacity];
-	for (size_t i = 0; i < size; i++)
-		newString[i] = string[i];
-
-	newString[size] = '\0';
-	delete[] string;
-	string = newString;
-	capacity = newCapacity;
-}
-char MyString::pop_back()
-{
-	if (isEmpty()) throw out_of_range("String is empty\n");
-
-	char oldChar = string[size - 1];
-	size--;
-	string[size] = '\0';
-	return oldChar;
-}
-const bool MyString::isEmpty() const
-{
-	return size == 0;
-}
-//void MyString::shrinkToSize()
-//{
-//	if (capacity > size * 2) //the logic here is questionable
-//	{
-//		size_t newCapacity = size + 1;
-//		char* newString = new char[newCapacity];
-//
-//		for (size_t i = 0; i < size; i++)
-//			newString[i] = string[i];
-//
-//		newString[size] = '\0';
-//
-//		delete[] string;
-//		string = newString;
-//		capacity = newCapacity;
-//	}
-//}
-bool MyString::equalsIgnoreCase(const MyString& other) const
-{
-	if (this->size != other.size) return false;
-
-	for (size_t i = 0; i < size; i++)
-	{
-		char a = string[i];
-		char b = other.string[i];
-
-		if (a >= 'A' && a <= 'Z') a = a - 'A' + 'a';
-		if (b >= 'A' && b <= 'Z') b = b - 'A' + 'a';
-
-		if (a != b) return false;
-	}
-	return true;
-}
-ostream& operator<<(ostream& os, const MyString& str) {
-	os << str.getString();  
-	return os;
+size_t MyString::getSize() const {
+    return data.size() ? data.size() - 1 : 0;
 }
 
-//originally in Tokenizer, but moved here (use: in Tokenizer)
-bool MyString::isLetter(const char ch)
+const char* MyString::getString() const 
 {
-	return (ch >= 'A' && ch <= 'Z') ||
-		(ch >= 'a' && ch <= 'z');
+    if (data.empty()) 
+        return nullptr;       
+    if (data.back() != '\0') 
+        return nullptr; 
+    return data.getData();
 }
-bool MyString::isDigit(const char ch)
-{
-	return (ch >= '0' && ch <= '9');
-}
-bool MyString::isOperator(const char ch)
-{
-	return ch == '+' ||
-		ch == '-' || ch == '*' || ch == '/' ||
-		ch == '^';
 
+char& MyString::operator[](size_t index) 
+{
+    if (index >= getSize()) 
+        throw std::out_of_range("Index out of range");
+    return data[index];
+}
+
+const char& MyString::operator[](size_t index) const 
+{
+    if (index >= getSize()) 
+        throw std::out_of_range("Index out of range");
+    return data[index];
+}
+
+bool MyString::operator==(const MyString& other) const 
+{
+    if (getSize() != other.getSize()) 
+        return false;
+    for (size_t i = 0; i < getSize(); i++)       
+        if (data[i] != other.data[i]) 
+            return false;
+    return true;
+}
+
+bool MyString::operator!=(const MyString& other) const 
+{
+    return !(*this == other);
+}
+
+
+void MyString::push_back(char c) 
+{
+    if (data.size() == 0) 
+        data.push_back(c);
+    else 
+    {
+        data[data.size() - 1] = c;
+        data.push_back('\0');
+    }
+}
+
+
+char MyString::pop_back() 
+{
+    if (getSize() == 0) 
+        throw std::out_of_range("String is empty");
+    char last = data[data.size() - 2];
+    data.pop_back();
+    data.pop_back();
+    data.push_back('\0');
+    return last;
+}
+
+bool MyString::isEmpty() const 
+{
+    return getSize() == 0;
+}
+
+void MyString::clear() 
+{
+    data.clear();
+    data.push_back('\0');
+}
+
+bool MyString::equalsIgnoreCase(const MyString& other) const 
+{
+    if (getSize() != other.getSize()) 
+        return false;
+    for (size_t i = 0; i < getSize(); i++) 
+    {
+        char a = std::tolower(data[i]);
+        char b = std::tolower(other.data[i]);
+        if (a != b) return false;
+    }
+    return true;
+}
+
+
+std::ostream& operator<<(std::ostream& os, const MyString& str) 
+{
+    os << str.getString();
+    return os;
 }
