@@ -1,49 +1,36 @@
 #pragma once
 #include <stdexcept>
-
+#include <iostream>
+#include "MyVector.h"
+//////////////////////////////////USE MyVector from implementations!!
 template<typename T>
-class arrayBasedStack
+class ArrayBasedStack
 {
 public:
-	//ctors
-	arrayBasedStack(); //def
-	arrayBasedStack(size_t cap = 10);//param
 
-	//copy
-	arrayBasedStack(const arrayBasedStack& other);
-	arrayBasedStack& operator=(const arrayBasedStack& other);
+	ArrayBasedStack() = default;
+	explicit ArrayBasedStack(size_t cap);
+	ArrayBasedStack(const ArrayBasedStack& other) = default;
+	ArrayBasedStack& operator=(const ArrayBasedStack& other) = default;
+	ArrayBasedStack(ArrayBasedStack&& other) noexcept = default;
+	ArrayBasedStack& operator=(ArrayBasedStack&& other) noexcept = default;
+	~ArrayBasedStack() = default;
 
-	//move
-	arrayBasedStack(arrayBasedStack&& other) noexcept;
-	arrayBasedStack& operator=(arrayBasedStack&& other) noexcept;
 
-	//dtor
-	~arrayBasedStack();
+	size_t getSize() const;
+	const T& topElement() const;
 
-	//getters
-	const size_t getSize() const;
-	const size_t getCapacity() const;
-
-	//dynamic
-	void freeDynamic();
-	void copyDynamic(const arrayBasedStack& other);
-
-	//additional for the stack 
 	void push(const T& element);
 	void push(T&& element);
 
 	T pop();
 
-	const T& topElement() const;
 	bool isEmpty() const;
-	bool isFull() const;
 	void clearStack();
 
 private:
-	T* array;
-	size_t capacity;
-	size_t top;
+	MyVector<T> array;
 };
 
 
-#include "arrayBasedStack.inl"
+#include "ArrayBasedStack.inl"
