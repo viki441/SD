@@ -253,29 +253,40 @@ private:
 		else if (root->data < value)
 			return removeRec(root->right, value);
 
-		//leaf, klon ili root
+		//ako e ravno
 		else
 		{
-			Node* toDelete = root;
+			
 
 			//1. no left child
 			if (!root->left)
+			{
+				Node* toDelete = root;
 				root = root->right;
+				delete toDelete;
+			}
+		
 
 			//2. no right child
 			else if (!root->right)
+			{
+				Node* toDelete = root;
 				root = root->left;
+				delete toDelete;
+			}
+				
 
 			//3 both children
 			else
 			{
-				Node* minRight = extractMin(root->right);
-				minRight->left = root->left;
-				minRight->right = root->right;
-				root = minRight;
-			}
+				Node* min = root-right;
+				while(min->left)
+					min = min->left;
 
-			delete toDelete;
+				root->data = min->data;
+				removeRec(root->right, min->data);
+				return true;
+			}
 			--treeSize;
 			return true;
 
