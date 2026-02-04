@@ -177,9 +177,7 @@ private:
 		if (root->data > value)
 			insertRec(root->left, value);
 		else if (value > root->data)
-			insertRec(root->right, value);
-
-		return;
+			insertRec(root->right, value)
 	}
 	void insertIterative(const T& value)
 	{
