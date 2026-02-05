@@ -1,94 +1,120 @@
-#include <vector>
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
+#include "MinHeap.h"
 
 using namespace std;
 
-
-class MinHeap 
+MinHeap::MinHeap()
+	:isValid(true)
 {
-	vector<int> heap;
-	bool isValid;
-
-
-	void siftDown(int n)
+}
+	
+void MinHeap::siftDown(int n)
+{
+	int size = heap.size();// because some parents may not have all 2 children
+	//n is the index of the last parent
+	while (true)
 	{
-		int smallest = n;
+		//notice we work mainly with the indexes
+		int parent = n;
 		int left = n * 2 + 1;
 		int right = n * 2 + 2;
 
-		if (left < heap.size() && heap[left] < heap[smallest])
-			smallest = left;
+		if (left < size && heap[left] < heap[parent])
+			parent = left;
 
-		if (right < heap.size() && heap[right] < heap[smallest])
-			smallest = right;
+		if (right < size && heap[right] < heap[parent])
+			parent = right;
 
-		if (smallest != n) {
-			swap(heap[n], heap[smallest]);
-			siftDown(smallest);
-		}
+		if (parent == n)
+			break;
+			
+		swap(heap[n], heap[parent]);
+
+		n = parent; // "sift-down"
+	
 	}
 
+}
 
-	void buildHeap()
+void MinHeap::siftUp(int n) // is child
+{	
+	while (n > 0)
+	{
+		int parent = (n - 1) / 2;
+
+		if (heap[n] >= heap[parent])
+			break;
+		
+		swap(heap[parent], heap[n]);
+	
+		n = parent; // "sift-up"
+	}
+}
+
+
+void MinHeap::heapify()
+{
+	if (isEmpty()) throw runtime_error("can heapify an empty heap");
+
+	if (!isValid)
 	{
 		for (int i = heap.size() / 2 - 1; i >= 0; i--)
 		{
 			siftDown(i);
 		}
+		
 	}
+	isValid = true;
+}
 
-	void ensureHeap()
-	{
-		if (!isValid)
-		{
-			buildHeap();
-			isValid = true;
-		}
-	}
+bool MinHeap::isEmpty()
+{
+	return heap.size();
+}
 
-public:
-	void insertConstSpeed(int n)
-	{
-		heap.push_back(n);
-		isValid = false;
-	}
+void MinHeap::insertConst(int n)
+{
+	heap.push_back(n);
+	//isValid = false;
+	siftUp(heap.size() - 1);
+}
 
-	int extractMin()
-	{
-		if (heap.empty()) throw runtime_error(" ");
+int MinHeap::extractMin()
+{
+	if (isEmpty()) throw runtime_error("heap is empty");
 
-		ensureHeap();
+	int min = heap[0];
 
-		int min = heap[0];
-		swap(heap[0], heap.back());
-		heap.pop_back();
+	swap(heap[0], heap.back());
+	heap.pop_back();
 
-		if (!heap.empty()) siftDown(0);
+	if (!isEmpty()) heapify();
 
-		return min;
+	return min;
 
-	}
+}
 
-	int getMin()
-	{
-		if(heap.empty())
-			throw runtime_error(" ");
-		ensureHeap();
-		return heap[0];
-	}
+int MinHeap::getMin()
+{
+	if (heap.empty())
+		throw runtime_error("em");
+	if(!isValid)
+		heapify();
+
+	return heap[0];
+}
 
 
-};
-
-int main() {
+int main()
+{
     MinHeap h;
 
-    h.insertConstSpeed(5);
-    h.insertConstSpeed(3);
-    h.insertConstSpeed(10);
-    h.insertConstSpeed(1);
+    h.insertConst(5);
+    h.insertConst(3);
+    h.insertConst(10);
+    h.insertConst(1);
 
     std::cout << h.extractMin() << std::endl; // 1
     std::cout << h.extractMin() << std::endl; // 3
